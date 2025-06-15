@@ -24,7 +24,7 @@ function analyzeWorkWeek(dailyHours) {
     dailyHours.length !== 7 ||
     !dailyHours.every(h => typeof h === 'number' && h >= 0)
   ) {
-    throw new Error('Input must be an array of exactly 7 non-negative numbers representing daily work hours.');
+    throw new Error('Input must be an array of exactly 7 positive numbers representing daily work hours.');
   }
 
   //Calculate total and average hours
