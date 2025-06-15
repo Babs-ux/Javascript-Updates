@@ -1,31 +1,76 @@
-//Challenge to calculate the average of 3 scores from 2 gymnastic teams (Dolphins and Koalas) using an arrow function.
-
+/*
+Challenge to make a function that recieves daily work hours for a certain week
+and returns:
+Total hours worked, average hours per day, and the day with the most hours worked, number of days worked
+Whether the week was full time (35 hours or more)
+*/
 
 'use strict';
 
-// Function to calculate the average score using three scores as the parameters and return the average.
-const calcAverage = (score1, score2, score3) => (score1 + score2 + score3) / 3;
+function analyzeWorkWeek(dailyHours) {
+  const daysOfWeek = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
 
-const scoreDolphins = calcAverage(44, 23, 71);
-const scoreKoalas = calcAverage(65, 54, 49);
-console.log(scoreDolphins, scoreKoalas);
+  //must be array of 7 numbers if not there will be Error
+  if (
+    !Array.isArray(dailyHours) ||
+    dailyHours.length !== 7 ||
+    !dailyHours.every(h => typeof h === 'number' && h >= 0)
+  ) {
+    throw new Error('Input must be an array of exactly 7 non-negative numbers representing daily work hours.');
+  }
 
-const checkWinner = function (avgDolphins, avgKoalas) {
-    if (avgDolphins >= 2 * avgKoalas) {
-        console.log(`Dolphins win  🏆 (${avgDolphins} vs ${avgKoalas})`);
-    } else if (avgKoalas >= 2 * avgDolphins) {
-        console.log(`Koalas win 🏆 (${avgKoalas} vs ${avgDolphins})`);
-    } else {
-        console.log('No team wins. Draw!');
+  //Calculate total and average hours
+  const totalRaw = dailyHours.reduce((sum, hours) => sum + hours, 0);
+  const averageRaw = totalRaw / dailyHours.length;
+
+  // Convert decimal hours to minutes
+  function formatHoursAndMinutes(decimalHours) {
+    const hours = Math.floor(decimalHours);
+    const minutes = Math.round((decimalHours - hours) * 60);
+    return `${hours} hours ${minutes} minutes`;
+  }
+
+  const totalHours = formatHoursAndMinutes(totalRaw);
+  const averageHours = formatHoursAndMinutes(averageRaw);
+
+  // Find the day with the most hours worked
+  let maxHours = -1;
+  let maxDayIndex = -1;
+  for (let i = 0; i < dailyHours.length; i++) {
+    if (dailyHours[i] > maxHours && dailyHours[i] > 0) {
+      maxHours = dailyHours[i];
+      maxDayIndex = i;
     }
+  }
+  const maxDay = maxDayIndex !== -1 ? daysOfWeek[maxDayIndex] : null;
+
+  //  Count days worked and determine if full-time
+  const daysWorked = dailyHours.filter(hours => hours > 0).length;
+  const isFullTime = totalRaw >= 35;
+
+  return {
+    totalHours,
+    averageHours,
+    maxDay,
+    daysWorked,
+    isFullTime,
+  };
 }
-//For example:
-checkWinner(576, 111);
 
+//Example
+const weeklyHours = [7.5, 8, 6.5, 0, 8.5, 5, 0];
+const analysis = analyzeWorkWeek(weeklyHours);
+console.log(analysis);
 
-// Test with different scores
-
-// const scoreDolphins = calcAverage(85, 54, 41);
-// const scoreKoalas = calcAverage(23, 34, 27);
-// console.log(scoreDolphins, scoreKoalas);
-// checkWinner(scoreDolphins, scoreKoalas);
+//Another example, but to display the error handling
+const weeklyHours2 = [7.5, 8, 6.5, 0, 8.5];
+const analysis2 = analyzeWorkWeek(weeklyHours2);
+console.log(analysis2);
