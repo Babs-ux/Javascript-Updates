@@ -1,4 +1,3 @@
-//Challenge to calculate the average of 3 scores from 2 gymnastic teams (Dolphins and Koalas) using an arrow function.
 
 
 'use strict';
