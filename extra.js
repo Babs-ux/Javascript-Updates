@@ -1,82 +1,43 @@
-//Challenge to make a football betting application
+/*1. Create an array 'events' of the different game events that happened (no duplicates)
+2. After the game has finished, is was found that the yellow card from minute 64 was unfair. So remove this event from the game events log.
+3. Print the following string to the console: "An event happened, on average, every 9 minutes" (keep in mind that a game has 90 minutes)
+4. Loop over the events and log them to the console, marking whether it's in the first half or second half (after 45 min) of the game, like this:
+      [FIRST HALF] 17: ⚽️ GOAL
 
 
-
+*/
 'use strict';
 
-// Data for the football game
-const game = {
-  team1: 'Bayern Munich',
-  team2: 'Borrussia Dortmund',
-  players: [
-    [
-      'Neuer',
-      'Pavard',
-      'Martinez',
-      'Alaba',
-      'Davies',
-      'Kimmich',
-      'Goretzka',
-      'Coman',
-      'Muller',
-      'Gnarby',
-      'Lewandowski',
-    ],
-    [
-      'Burki',
-      'Schulz',
-      'Hummels',
-      'Akanji',
-      'Hakimi',
-      'Weigl',
-      'Witsel',
-      'Hazard',
-      'Brandt',
-      'Sancho',
-      'Gotze',
-    ],
-  ],
-  score: '4:0',
-  scored: ['Lewandowski', 'Gnarby', 'Lewandowski', 'Hummels'],
-  date: 'Nov 9th, 2020',
-  odds: {
-    team1: 1.33,
-    x: 3.25,
-    team2: 6.5,
-  },
-};
+const gameEvents = new Map([
+  [17, '⚽️ GOAL'],
+  [36, '🔁 Substitution'],
+  [47, '⚽️ GOAL'],
+  [61, '🔁 Substitution'],
+  [64, '🔶 Yellow card'],
+  [69, '🔴 Red card'],
+  [70, '🔁 Substitution'],
+  [72, '🔁 Substitution'],
+  [76, '⚽️ GOAL'],
+  [80, '⚽️ GOAL'],
+  [92, '🔶 Yellow card'],
+]);
 
-// one player array for each team (variables 'players1' and 'players2')
-const [players1, players2] = game.players;
-console.log(players1, players2);
+//1. creating the Events array from the gameEvents map
+const events = [...new Set(gameEvents.values())];
+//crosschecking if it's an array
+console.log(events);
 
-// players1 is Bayern, players2 is Dortmund. The first player of players1 is the goalkeeper
-const [gk, ...fieldPlayers] = players1;
-console.log(gk, fieldPlayers);
+//2. removing the unfair yellow card event
+gameEvents.delete(64);
 
-// Created an array 'allPlayers' containing all players of both teams
-const allPlayers = [...players1, ...players2];
-console.log(allPlayers);
+//3. calculating the average time between events
+console.log(`An event happened, on average, every ${90 / gameEvents.size} minutes`);
+//logging the last event in the match to the console
+const time = [...gameEvents.keys()].pop();
+console.log(`and the last event happened at ${time} minutes`);
 
-// Created an array 'players1Final' containing all players of players1 and 3 substitutions
-const players1Final = [...players1, 'Thiago', 'Coutinho', 'Perisic'];
-console.log(players1Final);
-
-//Odds for each output
-const { odds: { team1, x: draw, team2 } } = game;
-console.log(team1, draw, team2);
-
-// 
-team1 < team2 && console.log('Team 1 is more likely to win'); // Log if Team 1 has better odds (lower value)
-team1 > team2 && console.log('Team 2 is more likely to win'); // Log if Team 2 has better
-
-// Function to print the goals scored
-const printGoals = function (...players) {
-    console.log(players);
-  console.log(`${players.length} goals were scored`);
-};
-
-//Test Data
-printGoals(...game.scored);
-
-
+//4. looping over the events and logging them to the console
+for (const [key, value] of gameEvents) {
+  const half = key <= 45 ? 'FIRST HALF' : 'SECOND HALF';
+  console.log(`[${half}] ${key}: ${value}`);
+}
