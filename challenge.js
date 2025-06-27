@@ -1,42 +1,45 @@
 'use strict';
 
-//Tip Calculator
-const calcTip = function (bill) {
-  return bill >= 50 && bill <= 300 ? bill * 0.15 : bill * 0.2;
-}
+// This code is a simple poll application that allows users to vote for their favorite programming language.
+const poll = {
+  question: 'What is your favourite programming language?',
+  options: ['0: JavaScript', '1: Python', '2: Rust', '3: C++'],
+  // This generates an array of 4 elements, each initialized to 0
+  answers: new Array(4).fill(0),
+  registerNewAnswer() {
+    // Get answer
+    const answer = Number(
+      prompt(
+        `${this.question}\n${this.options.join('\n')}\n(Write option number)`
+      )
+    );
+    console.log(answer);
 
-// Example bills arrayBills array to store 10 test values
-const bills = [22, 295, 176, 440, 37, 105, 10, 1100, 86, 52];
+    // Register answer
+    typeof answer === 'number' &&
+      answer < this.answers.length &&
+      this.answers[answer]++;
+    // Display results
+    this.displayResults();
+    this.displayResults('string');
+  },
 
-// empty arrays to store tips and totals
-const tips = [];
-const totals = [];
-
-// Loop through each bill, calculate the tip and total, and store them in their respective arrays
-for (let i = 0; i < bills.length; i++) {
-    const tip = calcTip(bills[i]);
-    tips.push(tip);
-    totals.push(bills[i] + tip);
-}
-
-console.log(bills, tips, totals);
-
-//BONUS CHALLENGE: Calculate the average of all tips and totals
-
-// Function to calculate the average of all values in a given array
-const calcAverage = function (arr) {
-   let sum = 0; 
-    for (let i = 0; i < arr.length; i++) {
-       // sum = sum += arr[i]; (Another way to write the same line)
-        // sum += arr[i]; (This is the preferred way)
-       sum += arr[i];
+  // Display results in two formats: as an array and as a string
+  displayResults(type = 'array') {
+    if (type === 'array') {
+      console.log(this.answers);
+    } else if (type === 'string') {
+      // Convert the answers array to a string format
+      console.log(`Poll results are ${this.answers.join(', ')}`);
     }
-    
-    return sum / arr.length;
-}
+  },
+};
 
-console.log(calcAverage([2, 3, 7]));
-
-console.log(calcAverage(totals));
-
-console.log(calcAverage(tips));
+// Adding a textarea and a button to the document for user input
+document
+  .querySelector('.poll')
+  .addEventListener('click', poll.registerNewAnswer.bind(poll));
+  // Example calls to displayResults with different contexts
+poll.displayResults.call({ answers: [5, 2, 3] }, 'string');
+poll.displayResults.call({ answers: [1, 5, 3, 9, 6, 1] }, 'string');
+poll.displayResults.call({ answers: [1, 5, 3, 9, 6, 1] });
