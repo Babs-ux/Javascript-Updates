@@ -1,11 +1,45 @@
-//Challenge to make a very simple tip calculator for whenever "Steve" goes out to eat with his friends.
+
+'use strict';
+
+/* 
+Writing a program that receives a list of variable names written in underscore_case and converts them to camelCase.
 
 
-//Created a variable for the bill amount.
-const bill = 275;
+THIS TEST DATA (pasted to textarea)
+underscore_case
+ first_name
+Some_Variable 
+  calculate_AGE
+delayed_departure
 
-//Created a variable for the tip amount based on the bill amount. 
-// If the bill is between 50 and 300, the tip is 15%, otherwise it is 20%.
-const tip = bill <= 300 && bill >= 50 ? bill * 0.15 : bill * 0.2;
+SHOULD PRODUCE THIS OUTPUT (5 separate console.log outputs)
+underscoreCase      
+firstName           
+someVariable        
+calculateAge        
+delayedDeparture    
+*/
+ 
 
-console.log(`The bill was ${bill}, the tip was ${tip}, and the total value is ${bill + tip}.`);
+// Created a textarea and a button in the document for user input
+document.body.append(document.createElement('textarea'));
+document.body.append(document.createElement('button'));
+
+/* Adding a click event listener to the button
+ When the button is clicked, it reads the text from the textarea */
+document.querySelector('button').addEventListener('click', function () {
+  const text = document.querySelector('textarea').value;
+  const rows = text.split('\n');
+
+  /* Loop through each row, convert it to camelCase, and log the output
+   Using padEnd to align the output for better readability */
+  for (const [i, row] of rows.entries()) {
+    const [first, second] = row.toLowerCase().trim().split('_');
+
+    const output = `${first}${second.replace(
+      second[0],
+      second[0].toUpperCase()
+    )}`;
+    console.log(`${output.padEnd(20)}${''.repeat(i + 1)}`);
+  }
+});
