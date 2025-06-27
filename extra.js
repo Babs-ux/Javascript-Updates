@@ -1,43 +1,45 @@
-/*1. Create an array 'events' of the different game events that happened (no duplicates)
-2. After the game has finished, is was found that the yellow card from minute 64 was unfair. So remove this event from the game events log.
-3. Print the following string to the console: "An event happened, on average, every 9 minutes" (keep in mind that a game has 90 minutes)
-4. Loop over the events and log them to the console, marking whether it's in the first half or second half (after 45 min) of the game, like this:
-      [FIRST HALF] 17: ⚽️ GOAL
 
-
-*/
 'use strict';
 
-const gameEvents = new Map([
-  [17, '⚽️ GOAL'],
-  [36, '🔁 Substitution'],
-  [47, '⚽️ GOAL'],
-  [61, '🔁 Substitution'],
-  [64, '🔶 Yellow card'],
-  [69, '🔴 Red card'],
-  [70, '🔁 Substitution'],
-  [72, '🔁 Substitution'],
-  [76, '⚽️ GOAL'],
-  [80, '⚽️ GOAL'],
-  [92, '🔶 Yellow card'],
-]);
+/* 
+Writing a program that receives a list of variable names written in underscore_case and converts them to camelCase.
 
-//1. creating the Events array from the gameEvents map
-const events = [...new Set(gameEvents.values())];
-//crosschecking if it's an array
-console.log(events);
 
-//2. removing the unfair yellow card event
-gameEvents.delete(64);
+THIS TEST DATA (pasted to textarea)
+underscore_case
+ first_name
+Some_Variable 
+  calculate_AGE
+delayed_departure
 
-//3. calculating the average time between events
-console.log(`An event happened, on average, every ${90 / gameEvents.size} minutes`);
-//logging the last event in the match to the console
-const time = [...gameEvents.keys()].pop();
-console.log(`and the last event happened at ${time} minutes`);
+SHOULD PRODUCE THIS OUTPUT (5 separate console.log outputs)
+underscoreCase      
+firstName           
+someVariable        
+calculateAge        
+delayedDeparture    
+*/
+ 
 
-//4. looping over the events and logging them to the console
-for (const [key, value] of gameEvents) {
-  const half = key <= 45 ? 'FIRST HALF' : 'SECOND HALF';
-  console.log(`[${half}] ${key}: ${value}`);
-}
+// Created a textarea and a button in the document for user input
+document.body.append(document.createElement('textarea'));
+document.body.append(document.createElement('button'));
+
+/* Adding a click event listener to the button
+ When the button is clicked, it reads the text from the textarea */
+document.querySelector('button').addEventListener('click', function () {
+  const text = document.querySelector('textarea').value;
+  const rows = text.split('\n');
+
+  /* Loop through each row, convert it to camelCase, and log the output
+   Using padEnd to align the output for better readability */
+  for (const [i, row] of rows.entries()) {
+    const [first, second] = row.toLowerCase().trim().split('_');
+
+    const output = `${first}${second.replace(
+      second[0],
+      second[0].toUpperCase()
+    )}`;
+    console.log(`${output.padEnd(20)}${''.repeat(i + 1)}`);
+  }
+});
