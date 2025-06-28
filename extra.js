@@ -29,7 +29,7 @@ const account3 = {
 
 
 const account4 = {
-  owner: 'Clark Kent', //I ran out of names, so I used a fictional character.
+  owner: 'Clark Kent', //I ran out of names, so I used a fictional character
   movements: [430, 1000, 700, 50, 90],
   interestRate: 1,
   pin: 4444,
@@ -183,6 +183,12 @@ btnLogin.addEventListener('click', function (e) {
     labelWelcome.style.color = 'red'; 
     containerApp.style.opacity = 0; // Hide the app if login fails
     console.log('Login failed'); // Log to console for debugging
+
+    // Reset the labelWelcome after 3 seconds
+    setTimeout(() => {
+      labelWelcome.textContent = `Log in to get started`;
+      labelWelcome.style.color = ''; // Reset text color
+  }, 2500); // Reset after 2.5 seconds
   }
 });
 
