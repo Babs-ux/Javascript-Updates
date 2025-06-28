@@ -78,7 +78,7 @@ const displayMovements = function (movements, sort = false) {
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
-        <div class="movements__value">${mov}€</div>
+        <div class="movements__value">€${Math.abs(mov)}</div>
       </div>
     `;
 
@@ -89,39 +89,40 @@ const displayMovements = function (movements, sort = false) {
 
 // Function to calculate the balance of an account
 const calcDisplayBalance = function (acc) {
-  acc.balance = movements.reduce((acc, mov) => acc + mov, 0);
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
   labelBalance.textContent = `€${acc.balance}`;
 };
 //calcDisplayBalance(account1.movements); //Called the function.
 
 // Functions to calculate the summary of deposits, withdrawals and interest earned respectively
-const calcDisplaySummary = function (movements) {
-  // Calculating User's Income
-  const income = movements
-  .filter(mov => mov > 0)
-  .reduce((acc, mov) => acc + mov, 0);
+const calcDisplaySummary = function (acc) {
+  // Calculate total deposits
+  const income = acc.movements
+    .filter(mov => mov > 0)
+    .reduce((acc, mov) => acc + mov, 0);
   labelSumIn.textContent = `€${income}`;
 
-  //Claculating User's Withdrawals
-  const out = movements
-  .filter(mov => mov < 0)
-  .reduce((acc, mov) => acc + mov, 0);
+  // Calculate total withdrawals
+  const out = acc.movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
   labelSumOut.textContent = `€${Math.abs(out)}`;
 
-  //Calculating User's Interest earned
-  const interest = movements
-  .filter(mov => mov > 0)
-  .map(deposit => (deposit * account1.interestRate) / 100)
-  .reduce((acc, mov) => acc + mov, 0);  
-  labelSumInterest.textContent = `€${interest.toFixed(2)}`; // Display interest earned in two decimal places 
+  // Calculate interest earned from deposits
+  const interest = acc.movements
+    .filter(mov => mov > 0)
+    .map(deposit => (deposit * acc.interestRate) / 100)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumInterest.textContent = `€${interest.toFixed(2)}`;
 };
+
 //calcDisplaySummary(account1.movements); //Called the function to display summary of account1
 
 
 //Function to create usernames for each account using Initials
-const createUsernames = function (accounts) {
-  accounts.forEach(function (account) {
-    account.username = account.owner
+const createUsernames = function (accs) {
+  accs.forEach(function (acc) {
+    acc.username = acc.owner
       .toLowerCase()
       .split(' ')
       .map(name => name[0])
@@ -139,10 +140,10 @@ const updateUI = function (acc) {
   displayMovements(acc.movements);
 
   // Display balance
-  calcDisplayBalance(acc.movements);
+  calcDisplayBalance(acc);
 
   // Display summary(income, withdrawals and interest earned)
-  calcDisplaySummary(acc.movements);
+  calcDisplaySummary(acc);
 };
 
 //Event handlers for login, transfer, loan and close account respectively
@@ -207,14 +208,14 @@ btnTransfer.addEventListener('click', function (e) {
     receiverAccount?.username !== currentAccount.username // Checking if the receiver account is not the same as the current account
   ) {
     // Perform the transfer
-    //currentAccount.movements.push(-amount);
-    //receiverAccount.movements.push(amount);
+    currentAccount.movements.push(-amount);
+    receiverAccount.movements.push(amount);
 
-    console.log(`Transferred €${amount} to ${receiverAccount.owner}`); // Log transfer details
+    console.log('Transfer succesful'); // Log transfer details
 
     // Update UI after transfer
-    //updateUI(currentAccount);
-  } /*else {
+    updateUI(currentAccount);
+  } else {
     //create a message to inform the user that the transfer failed
     labelWelcome.textContent = 'Transfer failed. Please check the amount and recipient.';
     labelWelcome.style.color = 'red'; // Change text color to red
@@ -225,7 +226,7 @@ btnTransfer.addEventListener('click', function (e) {
       labelWelcome.style.color = ''; // Reset text color
     //console.log('Transfer failed. Please check the amount and recipient.'); // Log transfer failure
   }, 3000); // Reset after 3 seconds
-  } */
+  } 
 });
 
 /* const user = 'Golden Macatelli';
