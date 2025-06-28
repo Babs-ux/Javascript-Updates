@@ -188,7 +188,7 @@ btnLogin.addEventListener('click', function (e) {
     setTimeout(() => {
       labelWelcome.textContent = `Log in to get started`;
       labelWelcome.style.color = ''; // Reset text color
-  }, 2500); // Reset after 2.5 seconds
+  }, 2750); // Reset after 2.75 seconds
   }
 });
 
