@@ -35,7 +35,7 @@ const account4 = {
   pin: 4444,
 };
 
-const accounts = [account1, account2, account3, account4];
+const accounts = [account1, account2, account3, account4];// Array of accounts
 
 // Elements
 const labelWelcome = document.querySelector('.welcome');
@@ -67,10 +67,10 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /* FUNCTIONS */
 /*Function to display Withdrawals, deposits and the Balance .
 This function takes an array of movements and a boolean to sort them. */
-const displayMovements = function (movements, sort = false) {
+const displayMovements = function (movements, sort = false){
   containerMovements.innerHTML = ''; // Clear existing movements
 
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements; // Sort movements if sort is true, otherwise use original order
 
   movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
@@ -91,6 +91,9 @@ const displayMovements = function (movements, sort = false) {
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
   labelBalance.textContent = `€${acc.balance}`;
+
+  /* const balanceGBP = (acc.balance * euroToGBP).toFixed(2);
+  console.log(`Balance in GBP: £${balanceGBP}`); */
 };
 //calcDisplayBalance(account1.movements); //Called the function.
 
@@ -146,13 +149,25 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc);
 };
 
+//Spinning Logo Function
+const logo = document.querySelector('.logo');
+
+const spinLogo = function () {
+  logo.classList.add('spin');
+
+  // Remove the class after the animation completes (1s in this case)
+  setTimeout(() => {
+    logo.classList.remove('spin');
+  }, 5000);
+};
+
 //Event handlers for login, transfer, loan and close account respectively
 let currentAccount; // Variable to store the currently logged-in account
 
 /* Login event handler
  This function handles the login process when the user clicks the login button */
 btnLogin.addEventListener('click', function (e) {
-  e.preventDefault(); // Prevent form submission
+  e.preventDefault(); // Prevent the default form submission behavior (basically reloading the page )
  // console.log('Login button clicked'); // Log to console for debugging
 
 
@@ -201,38 +216,143 @@ btnTransfer.addEventListener('click', function (e) {
   const receiverAccount = accounts.find(
     acc => acc.username === inputTransferTo.value.toUpperCase()
   );
-  console.log(amount, receiverAccount); // Log transfer details for debugging
-  
-//Afterwards, clear the input fields
-  inputTransferAmount.value = inputTransferTo.value = ''; // Clear input fields
-  inputTransferAmount.blur(); // Remove focus from transfer amount input
+
+  // Afterwards, clear the input fields
+  inputTransferAmount.value = inputTransferTo.value = '';
+  inputTransferAmount.blur();
+
   // Check if the transfer is valid
   if (
-    amount > 0 && // Checking if the amount is positive
-    receiverAccount && // Checking if the receiver account exists
-    currentAccount.balance >= amount && // Checking if the current account has enough balance
-    receiverAccount?.username !== currentAccount.username // Checking if the receiver account is not the same as the current account
+    amount > 0 &&
+    receiverAccount &&
+    currentAccount.balance >= amount &&
+    receiverAccount?.username !== currentAccount.username
   ) {
-    // Perform the transfer
-    currentAccount.movements.push(-amount);
-    receiverAccount.movements.push(amount);
+    // Show processing message immediately
+    labelWelcome.textContent = `Transfer of €${amount} to ${receiverAccount.owner.split(' ')[0]} is being processed...`;
+    labelWelcome.style.color = '#082d65';
 
-    console.log('Transfer succesful'); // Log transfer details
+    // Simulate delay before performing transfer
+    setTimeout(() => {
+  // Spin the logo when transfer happens
+  spinLogo();
 
-    // Update UI after transfer
-    updateUI(currentAccount);
+  // Perform the transfer
+  currentAccount.movements.push(-amount);
+  receiverAccount.movements.push(amount);
+
+  // Update UI after transfer
+  updateUI(currentAccount);
+
+  // Show success message
+  labelWelcome.textContent = `Transfer of €${amount} to ${receiverAccount.owner.split(' ')[0]} was successful.`;
+  labelWelcome.style.color = 'green';
+
+  setTimeout(() => {
+    labelWelcome.textContent = `Welcome back, Mr. ${currentAccount.owner.split(' ')[0]}`;
+    labelWelcome.style.color = '';
+  }, 3000);
+
+}, 3000); 
+
   } else {
-    //create a message to inform the user that the transfer failed
+    // Show failure message
     labelWelcome.textContent = 'Transfer failed. Please check the amount and recipient.';
-    labelWelcome.style.color = 'red'; // Change text color to red
+    labelWelcome.style.color = 'red';
 
-    //reset the labelWelcome after 3 seconds
+    // Reset the welcome message after 3 seconds
     setTimeout(() => {
       labelWelcome.textContent = `Welcome back, Mr. ${currentAccount.owner.split(' ')[0]}`;
+      labelWelcome.style.color = '';
+    }, 3000);
+  }
+});
+
+
+// Loan event handler
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  // Get the loan amount from the input field
+  const amount = Number(inputLoanAmount.value);
+
+  if(amount > 0 && // Check if the amount is positive
+    currentAccount.movements.some(mov => mov >= amount * 0.1)) { // Check if there is at least one deposit that is at least 10% of the loan amount
+    // Add the loan amount to the current account's movements
+    currentAccount.movements.push(amount);
+
+    console.log(`Loan of €${amount} granted.`); // Log loan details
+
+     //Create a message to ask the user to wait for 10 seconds
+    labelWelcome.textContent = `Your loan request of €${amount} is being processed. Please be patient for while.`;
+    labelWelcome.style.color = '#116268'; 
+
+      //timeout for a delay before updating the UI
+    setTimeout(() => {
+      // Spin the logo when loan is approved
+      spinLogo(9500);
+
+      // Update the welcome message to indicate loan approval
+      labelWelcome.textContent = `Loan of €${amount} approved, Mr. ${currentAccount.owner.split(' ')[0]}`;
+      labelWelcome.style.color = 'green'; 
+      // Update UI after loan
+      updateUI(currentAccount); 
+    }, 6500); 
+
+     //reset the Welcome message after 14 seconds
+    setTimeout(() => {
+      labelWelcome.textContent = `Welcome back, Mr. ${currentAccount.owner.split(' ')[0]}`;
+      labelWelcome.style.color = ''; 
+  }, 11500); 
+
+
+    // Clear the input field
+    inputLoanAmount.value = ''; // Clear input field
+   
+  } else {
+    // Create a message to inform the user that the loan request failed
+    labelWelcome.textContent = 'Loan request failed. Please check the amount and your deposits.';
+    labelWelcome.style.color = 'red'; // Change text color to red
+
+    // Reset the labelWelcome after 3 seconds
+    setTimeout(() => {
+      labelWelcome.textContent = `Would you like to try again?, Mr. ${currentAccount.owner.split(' ')[0]}`;
       labelWelcome.style.color = ''; // Reset text color
-    //console.log('Transfer failed. Please check the amount and recipient.'); // Log transfer failure
-  }, 3000); // Reset after 3 seconds
-  } 
+
+  }, 3500);
+
+}
+});
+//Close (Delete) account event handler
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  // Get the username and pin from the input fields
+  if (
+    inputCloseUsername.value.toUpperCase() === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    // Finding the index of the account to be closed
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+
+    // Remove the account from the accounts array
+    accounts.splice(index, 1);
+
+    // Hide the UI and reset the welcome message
+    containerApp.style.opacity = 0;
+    labelWelcome.textContent = 'Account closed successfully.';
+    labelWelcome.style.color = 'green'; // Change text color to green
+
+    setTimeout(() => {
+      labelWelcome.textContent = `Log in to get started`;
+      labelWelcome.style.color = ''; // Reset text color
+    }, 3000); // Reset after 3 seconds
+
+    // Clear input fields
+    inputCloseUsername.value = inputClosePin.value = '';
+  }
 });
 
 /* const user = 'Golden Macatelli';
@@ -257,7 +377,7 @@ const currencies = new Map([
 ]);
 
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-////////////////////// Testing areas for better Understanding//////////////////////
+////////////////////// Testing areas for better Understanding, better User experience//////////////////////
 /* this code calculates the total deposits in USD and GBP from the movements array.
 const eurToUsd = 1.1;
 const euroToGBP = 0.85;
@@ -285,4 +405,46 @@ console.log(FirstWithdrawal); // Output: -400
 console.log(accounts);
 
 const account = accounts.find(acc => acc.owner === 'Babari Dumka Legbara');
-console.log(account); // Output: Account object for Babari */
+console.log(account); // Output: Account object for Babari 
+
+
+//FIND INDEX METHOD
+// Finding the index of the account to be closed
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+
+    // Remove the account from the accounts array
+    accounts.splice(index); 
+
+// LAST INDEX METHOD
+console.log(movements);
+const lastWithdrawal = movements.findLast(mov => mov < 0);
+console.log(lastWithdrawal)    
+
+// challenge to print 'Your latest large moevement was X movements ago'
+const largemovements = movements
+.filter(mov => mov > 2000)
+.splice(movements, 1); // Get the last large movement
+
+const latestlargemovement = movements.findLastIndex(
+  mov => Math.abs(mov) > 2000);
+  console.log(
+    `Your latest largest movement was ${movements.length - latestlargemovement} movements ago, and it was €${largemovements}.`
+  ); 
+
+
+//Spin Logo Idea (Function to Spin the logo when some actions are performed)
+const logo = document.querySelector('.logo');
+
+const spinLogo = function () {
+  logo.classList.add('spin');
+
+  // Remove the class after the animation completes (1s in this case)
+  setTimeout(() => {
+    logo.classList.remove('spin');
+  }, 1000);
+};   */
+
+
+//Displaying Mr. Golden's account in GBP

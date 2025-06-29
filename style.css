@@ -1,8 +1,3 @@
-/*
- * Use this CSS to learn some intersting techniques,
- * in case you're wondering how I built the UI.
- * Have fun! 😁
- */
 
 * {
   margin: 0;
@@ -35,6 +30,7 @@ nav {
   font-weight: 500;
   transition: color .45s, background-color 1.5s;
 }
+
 
 .logo {
   height: 5.25rem;
@@ -98,6 +94,20 @@ nav {
   opacity: 0;
   transition: all 1.5s;
 }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.logo.spin {
+  animation: spin 1.5s linear;
+}
+
 
 .balance {
   grid-column: 1 / span 2;
@@ -256,7 +266,7 @@ h2 {
   font-family: inherit;
   font-size: 1.5rem;
   text-align: center;
-  color: #333;
+  color: #333333;
   padding: 0.3rem 1rem;
   border-radius: 0.7rem;
   transition: all 0.3s;
@@ -295,4 +305,80 @@ h2 {
 
 .timer {
   font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 55%; /* Slightly reduce base font size */
+  }
+
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto repeat(3, auto) auto;
+    gap: 2rem;
+  }
+
+  .balance {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .balance__value {
+    font-size: 3.5rem;
+  }
+
+  .movements {
+    max-height: 40vh;
+  }
+
+  .form {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, auto);
+  }
+
+  .form.form--loan {
+    grid-template-columns: 1fr;
+  }
+
+  .summary {
+  grid-row: 5 / 6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Optional: ensures wrapping if screen gets too small */
+  padding: 0 0.3rem;
+  margin-top: 1rem;
+}
+
+.summary__label {
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-right: 0.8rem;
+}
+
+.summary__value {
+  font-size: 2.2rem;
+  margin: 0 1.5rem;
+}
+
+.btn--sort {
+  margin-left: auto;
+}
+
+
+  .btn--sort {
+    margin-top: 1rem;
+  }
+
+  .login {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .login__input {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
 }
