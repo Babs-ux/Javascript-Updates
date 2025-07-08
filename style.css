@@ -1,4 +1,13 @@
-@import url('https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap');
+:root {
+  --color-brand--1: #ffb545;
+  --color-brand--2: #00c46a;
+
+  --color-dark--1: #2d3439;
+  --color-dark--2: #42484d;
+  --color-light--1: #aaa;
+  --color-light--2: #ececec;
+  --color-light--3: rgb(214, 222, 224);
+}
 
 * {
   margin: 0;
@@ -12,109 +21,256 @@ html {
 }
 
 body {
-  font-family: 'Press Start 2P', sans-serif;
-  color: #eee;
-  background-color: #222;
-  /* background-color: #60b347; */
-}
+  font-family: 'Manrope', sans-serif;
+  color: var(--color-light--2);
+  font-weight: 400;
+  line-height: 1.6;
+  height: 100vh;
+  overscroll-behavior-y: none;
 
-/* LAYOUT */
-header {
-  position: relative;
-  height: 35vh;
-  border-bottom: 7px solid #eee;
-}
+  background-color: #fff;
+  padding: 2.5rem;
 
-main {
-  height: 65vh;
-  color: #eee;
   display: flex;
-  align-items: center;
-  justify-content: space-around;
 }
 
-.left {
-  width: 52rem;
+/* GENERAL */
+a:link,
+a:visited {
+  color: var(--color-brand--1);
+}
+
+/* SIDEBAR */
+.sidebar {
+  flex-basis: 50rem;
+  background-color: var(--color-dark--1);
+  padding: 3rem 5rem 4rem 5rem;
   display: flex;
   flex-direction: column;
+}
+
+.logo {
+  height: 5.2rem;
+  align-self: center;
+  margin-bottom: 4rem;
+}
+
+.workouts {
+  list-style: none;
+  height: 77vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.workouts::-webkit-scrollbar {
+  width: 0;
+}
+
+.workout {
+  background-color: var(--color-dark--2);
+  border-radius: 5px;
+  padding: 1.5rem 2.25rem;
+  margin-bottom: 1.75rem;
+  cursor: pointer;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.75rem 1.5rem;
+}
+.workout--running {
+  border-left: 5px solid var(--color-brand--2);
+}
+.workout--cycling {
+  border-left: 5px solid var(--color-brand--1);
+}
+
+.workout__title {
+  font-size: 1.7rem;
+  font-weight: 600;
+  grid-column: 1 / -1;
+}
+
+.workout__details {
+  display: flex;
+  align-items: baseline;
+}
+
+.workout__icon {
+  font-size: 1.8rem;
+  margin-right: 0.2rem;
+  height: 0.28rem;
+}
+
+.workout__value {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.workout__unit {
+  font-size: 1.1rem;
+  color: var(--color-light--1);
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.form {
+  background-color: var(--color-dark--2);
+  border-radius: 5px;
+  padding: 1.5rem 2.75rem;
+  margin-bottom: 1.75rem;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 2.5rem;
+
+  /* Match height and activity boxes */
+  height: 9.25rem;
+  transition: all 0.5s, transform 1ms;
+}
+
+.workout__actions {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem; /* space between the buttons */
+  margin-top: 1rem;
+}
+
+.btn--edit,
+.btn--delete {
+  background-color: hsl(191, 53%, 86%);
+  color:  hsl(0, 0%, 40%);
+  font-size: 1.6rem;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.6s;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.reset{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 1.5rem;
+}
+
+.btn--edit:hover,
+.btn--delete:hover,
+.btn--reset:hover {
+  background-color: hsl(0, 0%, 20%);
+  color: hsl(0, 0%, 100%);
+}
+.btn--reset{
+  background-color: hsl(0, 26%, 89%);
+  color: hsl(0, 0%, 40%);
+  font-size: 1.6rem;
+  padding: 5px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.6s;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+
+.form.hidden {
+  transform: translateY(-30rem);
+  height: 0;
+  padding: 0 2.25rem;
+  margin-bottom: 0;
+  opacity: 0;
+}
+
+.form__row {
+  display: flex;
   align-items: center;
 }
 
-.right {
-  width: 52rem;
-  font-size: 2rem;
+.form__row--hidden {
+  display: none;
 }
 
-/* ELEMENTS STYLE */
-h1 {
-  font-size: 4rem;
-  text-align: center;
-  position: absolute;
+.form__label {
+  flex: 0 0 50%;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.form__input {
   width: 100%;
-  top: 52%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.number {
-  background: #eee;
-  color: #333;
-  font-size: 6rem;
-  width: 15rem;
-  padding: 3rem 0rem;
-  text-align: center;
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translate(-50%, 50%);
-}
-
-.between {
+  padding: 0.3rem 1.1rem;
+  font-family: inherit;
   font-size: 1.4rem;
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-}
-
-.again {
-  position: absolute;
-  top: 2rem;
-  left: 2rem;
-}
-
-.guess {
-  background: none;
-  border: 4px solid #eee;
-  font-family: inherit;
-  color: inherit;
-  font-size: 5rem;
-  padding: 2.5rem;
-  width: 25rem;
-  text-align: center;
-  display: block;
-  margin-bottom: 3rem;
-}
-
-.btn {
   border: none;
-  background-color: #eee;
-  color: #222;
-  font-size: 2rem;
-  font-family: inherit;
-  padding: 2rem 3rem;
-  cursor: pointer;
+  border-radius: 3px;
+  background-color: var(--color-light--3);
+  transition: all 0.2s;
 }
 
-.btn:hover {
-  background-color: #ccc;
+.form__input:focus {
+  outline: none;
+  background-color: #fff;
 }
 
-.message {
-  margin-bottom: 8rem;
-  height: 3rem;
+.form__btn {
+  display: none;
 }
 
-.label-score {
-  margin-bottom: 2rem;
+.copyright {
+  margin-top: auto;
+  font-size: 1.3rem;
+  text-align: center;
+  color: var(--color-light--1);
 }
 
+.twitter-link:link,
+.twitter-link:visited {
+  color: var(--color-light--1);
+  transition: all 0.2s;
+}
+
+.twitter-link:hover,
+.twitter-link:active {
+  color: var(--color-light--2);
+}
+
+/* MAP */
+#map {
+  flex: 1;
+  height: 100%;
+  background-color: var(--color-light--1);
+}
+
+/* Popup width is defined in JS using options */
+.leaflet-popup .leaflet-popup-content-wrapper {
+  background-color: var(--color-dark--1);
+  color: var(--color-light--2);
+  border-radius: 5px;
+  padding-right: 0.6rem;
+}
+
+.leaflet-popup .leaflet-popup-content {
+  font-size: 1.5rem;
+}
+
+.leaflet-popup .leaflet-popup-tip {
+  background-color: var(--color-dark--1);
+}
+
+.running-popup .leaflet-popup-content-wrapper {
+  border-left: 5px solid var(--color-brand--2);
+}
+.cycling-popup .leaflet-popup-content-wrapper {
+  border-left: 5px solid var(--color-brand--1);
+}
+
+/* Container for horizontal layout */
+.button-group {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem; /* Optional: adds space between buttons */
+}
