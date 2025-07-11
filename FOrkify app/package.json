@@ -1,0 +1,17 @@
+{
+  "name": "reciperadar",
+  "version": "1.0.0",
+  "description": "search for thousands of recipes",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html --public-url ./",
+    "dev": "parcel index.html --open"
+  },
+  "author": "Babari Legbara",
+  "license": "ISC",
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.15.4",
+    "parcel": "^2.15.4",
+    "sass": "^1.26.10"
+  }
+}
