@@ -1,163 +1,57 @@
-import icons from 'url:../img/icons.svg'; // Importing icons
+import * as model from './model.js'; // Importing the model
+import recipeView from './views/recipeView.js'; // Importing the recipe view
+import renderSpinner from './views/recipeView.js'; // Importing the spinner view
+import searchView from './views/searchView.js';
+import resultsView from './views/resultsView.js'; // Importing the results view
+
 import 'core-js/stable'; // Polyfills for stable features
 import 'regenerator-runtime/runtime'; // Polyfills for async/await
 
-const recipeContainer = document.querySelector('.recipe');
-
-const timeout = function (s) {
-  return new Promise(function (_, reject) {
-    setTimeout(function () {
-      reject(new Error(`Request took too long! Timeout after ${s} second`));
-    }, s * 1000);
-  });
-};
-
-// NEW API URL (instead of the one shown in the video)
-// https://forkify-api.jonas.io
-
-///////////////////////////////////////
-//Spinner
-const renderSpinner = function (parentEl) {
-  const markup = `
-    <div class="spinner">
-      <svg>
-        <use href="${icons}#icon-loader"></use>
-      </svg>
-    </div>
-  `;
-  parentEl.innerHTML = ''; // Clear previous content
-  parentEl.insertAdjacentHTML('afterbegin', markup);
+if(module.hot) {
+  module.hot.accept(); // Accept hot module replacement so that changes in the code can be reflected without a full reload
 }
 
 // Fetching a recipe from the Forkify API
-const showRecipe = async function () {
+const controlRecipes = async function () {
   try {
+
     const id = window.location.hash.slice(1); // Get the recipe ID from the URL hash
-    console.log(id);
+    // console.log(id);
 
-    renderSpinner(recipeContainer); // Show spinner while fetching data
-    // Fetching the recipe data using the Fetch API, handling errors
-    const res = await fetch(`https://forkify-api.jonas.io/api/v2/recipes/${id}`);
-    const data = await res.json();
+    if (!id) return; // If no ID, exit the function
+    recipeView.renderSpinner(); // Show spinner while loading
 
-    if (!res.ok) throw new Error(`${data.message} (${res.status})`);
+    //Loading the recipe
+    await model.loadRecipe(id); // Call the loadRecipe function from the model
 
-    console.log(res, data);
-    let {recipe} = data.data;
-
-    recipe = {
-    id: recipe.id,
-    title: recipe.title,
-    publisher: recipe.publisher,
-    image: recipe.image_url,
-    sourceUrl: recipe.source_url,
-    servings: recipe.servings,
-    cookingTime: recipe.cooking_time,
-    ingredients: recipe.ingredients,
+    // Rendering the recipe to the DOM (for HTML)
+    recipeView.render(model.state.recipe);
+  } catch (err) {
+   //console.log(err);
+   recipeView.renderError(`${err} gbum`); // Render error message if something goes wrong 
+  }
 };
 
-    console.log(recipe);
+const controlResults = async function () {
+  try {
+    resultsView.renderSpinner(); // Show spinner while loading results
 
-    // Rendering the recipe to the DOM
-    const markup = `
-    <figure class="recipe__fig">
-          <img src="${recipe.image}" alt="${recipe.title}" class="recipe__img" />
-          <h1 class="recipe__title">
-            <span>${recipe.title}</span>
-          </h1>
-        </figure>
+    const query = searchView.getQuery(); // Get the search query from the search view
+    if (!query) return; // If no query, exit the function
 
-        <div class="recipe__details">
-          <div class="recipe__info">
-            <svg class="recipe__info-icon">
-              <use href="${icons}#icon-clock"></use>
-            </svg>
-            <span class="recipe__info-data recipe__info-data--minutes">${recipe.cookingTime}</span>
-            <span class="recipe__info-text">minutes</span>
-          </div>
-          <div class="recipe__info">
-            <svg class="recipe__info-icon">
-              <use href="${icons}#icon-users"></use>
-            </svg>
-            <span class="recipe__info-data recipe__info-data--people">${recipe.servings}</span>
-            <span class="recipe__info-text">servings</span>
-
-            <div class="recipe__info-buttons">
-              <button class="btn--tiny btn--increase-servings">
-                <svg>
-                  <use href="${icons}#icon-minus-circle"></use>
-                </svg>
-              </button>
-              <button class="btn--tiny btn--increase-servings">
-                <svg>
-                  <use href="${icons}#icon-plus-circle"></use>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="recipe__user-generated">
-            <svg>
-              <use href="${icons}#icon-user"></use>
-            </svg>
-          </div>
-          <button class="btn--round">
-            <svg class="">
-              <use href="${icons}#icon-bookmark-fill"></use>
-            </svg>
-          </button>
-        </div>
-
-        <div class="recipe__ingredients">
-          <h2 class="heading--2">Recipe ingredients</h2>
-          <ul class="recipe__ingredient-list">
-            ${recipe.ingredients.map(ing => {
-              return `
-            <li class="recipe__ingredient">
-              <svg class="recipe__icon">
-                <use href="${icons}#icon-check"></use>
-              </svg>
-              <div class="recipe__quantity">${ing.quantity}</div>
-              <div class="recipe__description">
-                <span class="recipe__unit">${ing.unit}</span>
-                ${ing.description}
-              </div>
-            </li>
-              `;
-            }).join('')}
-
-            
-
+    await model.loadResults(query);
     
-          </ul>
-        </div>
-
-        <div class="recipe__directions">
-          <h2 class="heading--2">How to cook it</h2>
-          <p class="recipe__directions-text">
-            This recipe was carefully designed and tested by
-            <span class="recipe__publisher">${recipe.publisher}</span>. Please check out
-            directions at their website.
-          </p>
-          <a
-            class="btn--small recipe__btn"
-            href="${recipe.source_url}"
-            target="_blank"
-          >
-            <span>Directions</span>
-            <svg class="search__icon">
-              <use href="${icons}#icon-arrow-right"></use>
-            </svg>
-          </a>
-        </div>`;
-        recipeContainer.innerHTML = ''; // Clear previous content
-        recipeContainer.insertAdjacentHTML('afterbegin', markup);
+    resultsView.render(model.state.search.results); // Render the search results to the DOM
   } catch (err) {
-    alert(err);
+    console.log(err);
   }
 };
 
 
-window.addEventListener('hashchange', showRecipe); // Load the recipe when the page loads
+const init = function () {
+  recipeView.addHandlerRender(controlRecipes); // Add event listeners for hashchange and load events
+  searchView.addHandlerSearch(controlResults); // Add event listener for search submission
+};
 
+init(); // Initialize the application
 
