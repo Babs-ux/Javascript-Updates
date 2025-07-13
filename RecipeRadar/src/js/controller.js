@@ -1,9 +1,13 @@
 import * as model from './model.js'; // Importing the model
+import { MODAL_CLOSE_SEC } from './config.js';
 import recipeView from './views/recipeView.js'; // Importing the recipe view
 import renderSpinner from './views/recipeView.js'; // Importing the spinner view
+
 import searchView from './views/searchView.js';
+import addREcipeView from './views/addREcipeView.js';
 import resultsView from './views/resultsView.js'; // Importing the results view
 import bookmarksView from './views/bookmarkView.js'; // Importing the bookmarks view
+
 import pageView from './views/pageView.js'; // Importing the pagination view
 
 import 'core-js/stable'; // Polyfills for stable features
@@ -95,16 +99,49 @@ const controlBookamrks = function () {
   bookmarksView.render(model.state.bookmarks); // Render the bookmarks view with the current bookmarks
 };
 
+const controlAddRecipe = async function (newRecipe) {
+  try {
+    // Show spinner while adding the recipe
+    addREcipeView.renderSpinner();
+
+    // Upload the new recipe
+    await model.uploadRecipe(newRecipe);
+
+    // Render the new recipe
+    recipeView.render(model.state.recipe);
+
+    //Close form window
+    setTimeout(function() {
+      addREcipeView.toggleWindow()
+    }, MODAL_CLOSE_SEC * 1000);
+
+    // Success message
+    addREcipeView.renderMessage();
+
+    // Render bookmarks view
+    bookmarksView.render(model.state.bookmarks);
+
+    // Change the URL to the new recipe ID
+    window.history.pushState(null, '', `#${model.state.recipe.id}`);
+
+  } catch (err) {
+    console.error(err);
+    addREcipeView.renderError(err.message); // Render error message if something goes wrong
+  }
+};
+
 // Function to initialize the application
 const init = function () {
   bookmarksView.addHandlerRender(controlBookamrks); // Add event listener for rendering bookmarks on page load
   recipeView.addHandlerRender(controlRecipes); // Add event listeners for hashchange and load events
+
   recipeView.addHandlerUpdateServings(controlServings); // Add event listener for servings update
   recipeView.addHandlerAddBookmark(controlBookmarks); // Add event listener for adding bookmarks
 
   searchView.addHandlerSearch(controlResults); // Add event listener for search submission
   pageView.addHandlerClick(controlPage); // Add event listener for pagination button clicks
- // controlServings(model.updateServings); // Add event listener for servings update
+
+  addREcipeView.addHandlerUpload(controlAddRecipe);
 };
 
 init(); // Initialize the application

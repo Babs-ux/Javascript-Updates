@@ -77,4 +77,19 @@ export default class View {
         this._clear(); // Clear previous content
         this._parentElement.insertAdjacentHTML('afterbegin', markup);
       }
+
+    renderMessage(message = this._message) {
+    const markup = `
+      <div class="message">
+        <div>
+          <svg>
+            <use href="${icons}#icon-smile"></use>
+          </svg>
+        </div>
+        <p>${message}</p>
+      </div>
+    `;
+    this._clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
 }

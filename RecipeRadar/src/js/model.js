@@ -1,6 +1,6 @@
 import { async } from 'regenerator-runtime'; // Importing async functionality
-import { API_URL, RES_PER_PAGE } from './config';
-import { getJSOn } from './helpers.js'; // Importing helper function to fetch JSON data
+import { API_URL, RES_PER_PAGE, KEY } from './config';
+import { getJSOn, sendJSOn } from './helpers.js'; // Importing helper function to fetch JSON data
 
 
 
@@ -15,12 +15,10 @@ export const state = {
   bookmarks: [],  
 };  
 
-export const loadRecipe = async function (id) {
-  try {
-    const data = await getJSOn(`${API_URL}/${id}`); 
-    let { recipe } = data.data;
+const createRecipe = function (data) {
+  let { recipe } = data.data;
 
-    recipe = {
+    return {
       id: recipe.id,
       title: recipe.title,
       publisher: recipe.publisher,
@@ -29,7 +27,14 @@ export const loadRecipe = async function (id) {
       servings: recipe.servings,
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients,
+      ...(recipe.key && { key: recipe.key }), 
     };
+}
+
+export const loadRecipe = async function (id) {
+  try {
+    const data = await getJSOn(`${API_URL}/${id}`); 
+    state.recipe = createRecipe(data);
 
     if (state.bookmarks.some(bookmark => bookmark.id === id)) {
       recipe.bookmarked = true; // If the recipe is bookmarked, set the bookmarked property to true
@@ -128,3 +133,35 @@ const clearBookmarks = function () {
   state.bookmarks = []; // Reset the bookmarks array in the state
 }
 //clearBookmarks();
+
+
+// This function takes a new recipe object as an argument and uploads it to the API
+export const uploadRecipe = async function (newRecipe) {
+  try {
+    const ingredients = Object.entries(newRecipe) // Convert the new recipe object to an array of entries
+    .filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '') // Filter out empty ingredients
+    .map(ing => {
+      const ingArr = ing[1].replaceAll(' ', '').split(',');
+      if (ingArr.length !== 3) throw new Error('Wrong ingredient format! Please use the correct format: "Quantity, Unit, Description"'); // Validate the ingredient format
+      const [quantity, unit, description] = ingArr; // Destructure the ingredient array into quantity, unit, and description
+      return {quantity: quantity ? +quantity : null, unit, description}; // Return an object with quantity, unit, and description
+
+    });
+    const recipe = {
+    title: newRecipe.title,
+    source_url: newRecipe.sourceUrl,
+    image_url: newRecipe.image,
+    publisher: newRecipe.publisher,
+    cooking_time: +newRecipe.cookingTime, // Convert cooking time to a number
+    servings: +newRecipe.servings, // Convert servings to a number
+    ingredients, // Include the ingredients array
+  };
+  console.log(recipe);
+  const data = await sendJSOn(`${API_URL}?key=${KEY}`, recipe)
+  state.recipe = createRecipe(data);
+  addBookmark(state.recipe);
+  } catch (err) {
+    throw err; // Propagate the error if the ingredient format is incorrect
+  }
+  
+}
