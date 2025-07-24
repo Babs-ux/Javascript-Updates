@@ -44,6 +44,7 @@ const getJSON = function (url, errorMsg = 'Something went wrong') {
   });
 };
 
+// Function to  wait for a specified number of seconds. returns a Promise that resolves after the specified time.
 const wait = function (seconds) {
   return new Promise(function (resolve) {
     setTimeout(resolve, seconds * 1000);
@@ -52,6 +53,7 @@ const wait = function (seconds) {
 
 const imgContainer = document.querySelector('.images');
 
+// Function to create an image element and append it to the imgContainer
 const createImage = function (imgPath) {
   return new Promise(function (resolve, reject) {
     const img = document.createElement('img');
@@ -68,7 +70,7 @@ const createImage = function (imgPath) {
   });
 };
 
-//
+//Function to display current location of user using reverse geocoding
 const whereAmI = function (lat, lng) {
   fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`)
     .then(res => {
@@ -90,7 +92,7 @@ const whereAmI = function (lat, lng) {
     .catch(err => console.error(`${err.message} . Please try again!`));
 };
 
-//whereAmI(52.508, 13.381); // Example coordinates for Berlin
+whereAmI(52.508, 13.381); // Example coordinates for Berlin
 
 // Event listener for the button to get the user's current location
 btn.addEventListener('click', function () {
